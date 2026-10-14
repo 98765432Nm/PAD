@@ -1,0 +1,39 @@
+---
+# title: "Diseños Expeimentales"
+format:
+  html:
+    toc: true
+    toc-expand: true
+    toc-depth: 4
+    toc-location: left
+    number-sections: true
+    self-contained: true
+    code-fold: false
+editor_options: 
+  chunk_output_type: console
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+# Project Setup
+
+```{r}
+#| label: setup
+
+source('https://inkaverse.com/setup.r')
+```
+
+# Diseño de experimentos
+
+## DBCA factorial
+
+Experimento para evaluar el efecto de dos factores sobre el rendimiento del cultivo de frijol (Phaseolus vulgaris L.) mediante un diseño de bloques completos al azar (DBCA). El Factor A corresponderá a la dosis de fertilización nitrogenada, con tres niveles: 0, 50 y 100 kg N ha⁻¹; mientras que el Factor B corresponderá a la frecuencia de aplicación de riego, con dos niveles: riego cada 5 días y riego cada 10 días. El experimento contará con cinco repeticiones.
+
+https://inkaverse.com/
+
+### código
+
+https:///articles/DoE-2-RCBD.html 
+
