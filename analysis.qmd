@@ -1,5 +1,5 @@
 ---
-# title: "Manuscript Analysis"
+# title: "Diseños Experimentales"
 format:
   html:
     toc: true
@@ -25,103 +25,139 @@ execute:
 source('https://inkaverse.com/setup.r')
 ```
 
-# Data import
+# Diseño de experimentos 
+
+## DBCA factorial 
+
+Experimento para evaluar el efecto de dos factores sobre el rendimiento del cultivo de frijol (Phaseolus vulgaris* L.) mediante un diseño de bloques completos al azar (DBCA). El Factor A corresponderá a la dosis de fertilización nitrogenada con tres niveles: 0, 50 y 100 kg N ha⁻¹; mientras que el Factor B corresponderá a la frecuencia de aplicación de riego, con dos niveles: riego cada 5 días y riego cada 10 días. El experimento contará con cinco repeticiones.
+
+> https://inkaverse.com/
+
+### codigo 
+
+> https://inkaverse.com/articles/DoE-1_RCBD.html
 
 ```{r}
-gs <- "url" %>% 
-  as_sheets_id()
+# 1. Define factors: dosis y riego
+factors <- list(
+  dosis= c("0", "50", "100"),
+  riego = c("5", "10")
+)
 
-fb <- gs %>% 
-  range_read(ss = .,sheet = "fb")
+# tratamientos? => 6
+# 2. Generate RCBD layout
+design <- design_repblock(
+  nfactors = 2,
+  factors = factors,
+  type = "rcbd",
+  rep = 5,
+  zigzag = TRUE,
+  seed = 2026
+)
+
+
+# UE? => 30 
+
+# Fieldbook preview
+fb <- design$fieldbook 
+
+fb %>% 
+  knitr::kable(caption = "Fieldbook preview")
+
 ```
-
-# Research Objectives
-
-> https://docs.google.com/spreadsheets/d/1u6xgTT8jDFkHSMkK1iRrNVR-1iOINQidbEiaDCu2Nqw/edit?gid=504037395#gid=504037395
-
-## RO 1
-
+### Croquis experimental
 ```{r}
 
+# Field layout visualization
+tarpuy_plotdesign(
+  data = design,
+  factor = "dosis",
+  fill = c("plots", "riego")
+)
 ```
 
-## RO 2
+
+### Etiquetas
 
 ```{r}
+font <- c("Permanent Marker", "Tillana", "Courgette")
 
+huito_fonts(font)
 ```
-
-# Multivariate
 
 ```{r}
-#| eval: false
+label <- fb %>%
+  label_layout(
+    size = c(4, 7),
+    border_color = "black"
+  ) %>%
+  include_image(
+    value = "https://flavjack.github.io/inti/img/inkaverse.png",
+    size = c(1, 1),
+    position = c(0.7, 6.35)
+  ) %>%
+  include_text(
+    value = "PAPA\nDBCA",
+    position = c(2.6, 6.35),
+    size = 13,
+    fontface = "bold",
+    color = "black"
+  ) %>%
+  include_text(
+    value = "variedad",
+    position = c(2, 5.55),
+    size = 11,
+    fontface = "bold",
+    color = "#294F74",
+    prefix = "Variedad: "
+  ) %>%
+  include_text(
+    value = "compost",
+    position = c(2, 5.05),
+    size = 10,
+    fontface = "bold",
+    color = "#00804A",
+    prefix = "Compost (t/ha): "
+  ) %>%
+  include_barcode(
+    value = "qrcode",
+    size = c(3.6, 3.6),
+    position = c(2, 2.9)
+  ) %>%
+  include_text(
+    value = "plots",
+    position = c(2, 0.6),
+    size = 16,
+    fontface = "bold",
+    color = "red",
+    prefix = "Parcela: "
+  )
 
-library(FactoMineR)
-library(factoextra)
-
-dtx <- fb %>% 
-  dplyr::select(!c("var1", "var2")) %>% 
-  as.data.frame()
-# str(dtx)
-  
-mv <- dtx %>% 
-  PCA(scale.unit = T
-      , graph = F
-      , quali.sup = c(1, 2))
-
-var <- mv %>% 
-  plot.PCA(choix = c("var"), cex=0.7)
-
-cos <- mv %>% 
-  fviz_pca_var(col.var = "cos2"
-               , gradient.cols = inti:::paleta()
-               , repel = TRUE
-               , labelsize = 2)
-
-ind <- mv %>% 
-  plot.PCA(choix = c("ind")
-           , cex = 0.7
-           , label = "ind"
-           , invisible = "quali"
-           , col.hab = inti:::paleta()
-           , habillage = "none"
-           )
-
-pcainfo <- factoextra::get_pca(mv); pcainfo
-
-pcainfo$cor %>% kable(caption = "Variable correlations")
-pcainfo$contrib %>% kable(caption = "Variable Contribution")
-pcainfo$cos2 %>% kable(caption = "Variable Cos2")
-
-cls <- mv %>% HCPC(nb.clust = -1, graph = FALSE)
-
-map <- \() {plot.HCPC(cls, choice = "map", draw.tree = FALSE)}
-
-cls$data.clust # Cluster membership of each individual
-cls$desc.var$quanti # Quantitative variables characterizing each cluster
-cls$desc.var$category # Categorical variables significantly by cluster 
-table(cls$data.clust$clust) # Number of individuals assigned to each cluster
-
-plot <- list(var, cos, ind, map) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = "auto") %>% 
-  ggsave(plot = ., "manuscript/multivariate.jpg", units = "cm"
-                , width = 30, height = 30)
-
-plot %>% include_graphics()
+# Ver una muestra
+label %>%
+  label_print(mode = "preview")
 ```
 
-# References
 
-Broman, K. W., & Woo, K. H. (2017). Data organization in spreadsheets. The American Statistician, 72(1), 2–10. https://doi.org/10.1080/00031305.2017.1375989
 
-Zuur, A. F., Ieno, E. N., & Elphick, C. S. (2009). A protocol for data exploration to avoid common statistical problems. Methods in Ecology and Evolution, 1(1), 3–14. https://doi.org/10.1111/j.2041-210x.2009.00001.x
+```{r}
+label %>%
+  label_print(
+    mode = "complete",
+    filename = "Etiquetas_Papa_DBCA_Vertical"
+  )
+```
 
-Francoishusson. (2017, July 13). PCA course using FactoMineR | R-bloggers. R-bloggers. https://www.r-bloggers.com/2017/07/pca-course-using-factominer/
 
-Kozak, M., & Piepho, H. (2017). What’s normal anyway? Residual plots are more telling than significance tests when checking ANOVA assumptions. Journal of Agronomy and Crop Science, 204(1), 86–98. https://doi.org/10.1111/jac.12220
 
-Tanaka, E., & Hui, F. K. C. (2019). Symbolic formulae for linear mixed models. In Communications in computer and information science (pp. 3–21). https://doi.org/10.1007/978-981-15-1960-4_1
 
-Schielzeth, H., Dingemanse, N. J., Nakagawa, S., Westneat, D. F., Allegue, H., Teplitsky, C., Réale, D., Dochtermann, N. A., Garamszegi, L. Z., & Araya‐Ajoy, Y. G. (2020). Robustness of linear mixed‐effects models to violations of distributional assumptions. Methods in Ecology and Evolution, 11(9), 1141–1152. https://doi.org/10.1111/2041-210x.13434
 
-Jambor, H. K. (2025). A checklist for designing and improving the visualization of scientific data. Nature Cell Biology, 27(6), 879–883. https://doi.org/10.1038/s41556-025-01684-z
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+{
+  "hash": "ccdb3f4e89b940119d15593539ce3c29",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\n# title: \"Diseños Experimentales\"\nformat:\n  html:\n    toc: true\n    toc-expand: true\n    toc-depth: 4\n    toc-location: left\n    number-sections: true\n    self-contained: true\n    code-fold: false\neditor_options: \n  chunk_output_type: console\nexecute: \n  warning: false\n  message: false\n  echo: true\n---\n\n# Project Setup\n\n\n::: {.cell}\n\n```{.r .cell-code}\nsource('https://inkaverse.com/setup.r')\n```\n:::\n\n\n# Diseño de experimentos \n\n## DBCA factorial \n\nExperimento para evaluar el efecto de dos factores sobre el rendimiento del cultivo de frijol (Phaseolus vulgaris* L.) mediante un diseño de bloques completos al azar (DBCA). El Factor A corresponderá a la dosis de fertilización nitrogenada con tres niveles: 0, 50 y 100 kg N ha⁻¹; mientras que el Factor B corresponderá a la frecuencia de aplicación de riego, con dos niveles: riego cada 5 días y riego cada 10 días. El experimento contará con cinco repeticiones.\n\n> https://inkaverse.com/\n\n### codigo \n\n> https://inkaverse.com/articles/DoE-1_RCBD.html\n\n\n::: {.cell}\n\n```{.r .cell-code}\n# 1. Define factors: dosis y riego\nfactors <- list(\n  dosis= c(\"0\", \"50\", \"100\"),\n  riego = c(\"5\", \"10\")\n)\n\n# tratamientos? => 6\n# 2. Generate RCBD layout\ndesign <- design_repblock(\n  nfactors = 2,\n  factors = factors,\n  type = \"rcbd\",\n  rep = 5,\n  zigzag = TRUE,\n  seed = 2026\n)\n\n\n# UE? => 30 \n\n# Fieldbook preview\nfb <- design$fieldbook \n\nfb %>% \n  knitr::kable(caption = \"Fieldbook preview\")\n```\n:::\n\n### Croquis experimental\n\n::: {.cell}\n\n```{.r .cell-code}\n# Field layout visualization\ntarpuy_plotdesign(\n  data = design,\n  factor = \"dosis\",\n  fill = c(\"plots\", \"riego\")\n)\n```\n:::\n\n\n\n\n\n",
+    "supporting": [
+      "analysis_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
